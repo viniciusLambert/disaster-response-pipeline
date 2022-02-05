@@ -6,9 +6,9 @@ from nltk.stem import WordNetLemmatizer
 from nltk.tokenize import word_tokenize
 
 from flask import Flask
-from flask import render_template, request, jsonify
+from flask import render_template, request
 from plotly.graph_objs import Bar
-from sklearn.externals import joblib
+import joblib
 from sqlalchemy import create_engine
 
 
@@ -26,11 +26,11 @@ def tokenize(text):
     return clean_tokens
 
 # load data
-engine = create_engine('sqlite:///../data/YourDatabaseName.db')
-df = pd.read_sql_table('YourTableName', engine)
+engine = create_engine('sqlite:///../data/DisasterResponse.db')
+df = pd.read_sql_table('DisasterResponse', engine)
 
 # load model
-model = joblib.load("../models/your_model_name.pkl")
+model = joblib.load("../models/classifier.pkl")
 
 
 # index webpage displays cool visuals and receives user input text for model
@@ -45,26 +45,49 @@ def index():
     
     # create visuals
     # TODO: Below is an example - modify to create your own visuals
-    graphs = [
-        {
-            'data': [
-                Bar(
-                    x=genre_names,
-                    y=genre_counts
-                )
-            ],
+    graphs = []
+    graphs.append({
+        'data': [
+            Bar(
+                x=genre_names,
+                y=genre_counts
+            )
+        ],
 
-            'layout': {
-                'title': 'Distribution of Message Genres',
-                'yaxis': {
-                    'title': "Count"
-                },
-                'xaxis': {
-                    'title': "Genre"
-                }
+        'layout': {
+            'title': 'Distribution of Message Genres',
+            'yaxis': {
+                'title': "Count"
+            },
+            'xaxis': {
+                'title': "Genre"
             }
         }
-    ]
+    })
+    
+    
+
+    message_content_count = df.drop(['id', 'message', 'original', 'genre'], axis=1).sum()
+    message_content_names = list(message_content_count.index)
+    graphs.append({
+        'data': [
+            Bar(
+                x=message_content_names,
+                y=message_content_count
+            )
+        ],
+
+        'layout': {
+            'title': 'Distribution of Message Content Type',
+            'yaxis': {
+                'title': "Count"
+            },
+            'xaxis': {
+                'title': "Content Type",
+                'categoryorder':'total descending'
+            }
+        }
+    })
     
     # encode plotly graphs in JSON
     ids = ["graph-{}".format(i) for i, _ in enumerate(graphs)]
