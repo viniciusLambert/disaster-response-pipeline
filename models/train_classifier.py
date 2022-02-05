@@ -1,37 +1,26 @@
 import sys
+import nltk
 import pandas as pd
 import numpy as np
-import pickle
-
-from nltk.tokenize import word_tokenize
-from nltk.stem import WordNetLemmatizer
-
+import joblib
 
 from sklearn.metrics import classification_report
-from sklearn.model_selection import GridSearchCV
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline, FeatureUnion
 from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
-from sklearn.base import BaseEstimator, TransformerMixin
 from sqlalchemy import create_engine
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.multioutput import MultiOutputClassifier
 
 from sklearn.metrics import classification_report
 
-def load_data(database_filepath):
-    ngine = create_engine(f'sqlite:///{database_filepath}')
-    df =  pd.read_sql_query ( "SELECT * FROM LabeledMessages", engine)
-
-    X = df["message"]
-    y = df.drop(['id', 'message', 'original', 'genre'], axis=1)
-    return X, y
+from sklearn.base import BaseEstimator, TransformerMixin
 
 
 def tokenize(text):
     norm_text = text.lower()
-    tokens = word_tokenize(norm_text)
-    lemmatizer = WordNetLemmatizer()
+    tokens = nltk.tokenize.word_tokenize(norm_text)
+    lemmatizer = nltk.stem.WordNetLemmatizer()
 
     clean_tokens = []
     for tok in tokens:
@@ -40,35 +29,21 @@ def tokenize(text):
 
     return clean_tokens
 
-class StartingVerbExtractor(BaseEstimator, TransformerMixin):
 
-    def starting_verb(self, text):
-        sentence_list = nltk.sent_tokenize(text)
-        for sentence in sentence_list:
-            pos_tags = nltk.pos_tag(tokenize(sentence))
-            first_word, first_tag = pos_tags[0]
-            if first_tag in ['VB', 'VBP'] or first_word == 'RT':
-                return True
-        return False
+def load_data(database_filepath):
+    engine = create_engine(f'sqlite:///{database_filepath}')
+    df =  pd.read_sql_query ( "SELECT * FROM DisasterResponse", engine)
 
-    def fit(self, x, y=None):
-        return self
+    X = df["message"]
+    y = df.drop(['id', 'message', 'original', 'genre'], axis=1)
+    return X, y, y.columns
 
-    def transform(self, X):
-        X_tagged = pd.Series(X).apply(self.starting_verb)
-        return pd.DataFrame(X_tagged)
 
 def build_model():
     pipeline = Pipeline([
-        ('features', FeatureUnion([
 
-            ('text_pipeline', Pipeline([
-                ('vect', CountVectorizer(tokenizer=tokenize)),
-                ('tfidf', TfidfTransformer())
-            ])),
-
-            ('starting_verb', StartingVerbExtractor())
-        ])),
+        ('vect', CountVectorizer(tokenizer=tokenize)),
+        ('tfidf', TfidfTransformer()),
 
         ('lr_multi', MultiOutputClassifier(
             RandomForestClassifier())
@@ -83,14 +58,16 @@ def evaluate_model(model, X_test, Y_test, category_names):
 
     y_pred = model.predict(X_test)
 
+    print("Model Score: {}".format(model.score(X_test, Y_test)))
+
     for column in range(y_pred.shape[1]):
         print("Column: ",category_names[column])
-        print(classification_report(y_test.to_numpy()[:,column], y_pred[:,column]))
+        print(classification_report(Y_test.to_numpy()[:,column], y_pred[:,column]))
         print("----------------------------------------------------------*")
-    print("\nBest Parameters:", cv.best_params_)
+
 
 def save_model(model, model_filepath):
-    pickle.dump(model, open( model_filepath, 'wb'))
+    joblib.dump(model, model_filepath)
 
 
 def main():

@@ -6,6 +6,12 @@ __pycache__/
 # C extensions
 *.so
 
+
+# db ans ML models
+
+*.pkl
+*.db
+
 # Distribution / packaging
 .Python
 build/
