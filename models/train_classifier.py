@@ -103,6 +103,7 @@ def evaluate_model(model, X_test, Y_test, category_names):
     y_pred = model.predict(X_test)
 
     print("Model Score: {}".format(model.score(X_test, Y_test)))
+    print("Model Best Params: {}".format(model.best_params_))
 
     for column in range(y_pred.shape[1]):
         print("Column: ",category_names[column])
