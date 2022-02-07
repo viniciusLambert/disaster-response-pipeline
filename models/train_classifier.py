@@ -1,5 +1,7 @@
-import sys
 import nltk
+nltk.download(['punkt', 'wordnet', 'averaged_perceptron_tagger'])
+
+import sys
 import pandas as pd
 import numpy as np
 import joblib
@@ -67,26 +69,24 @@ def build_model():
     """
     pipeline = Pipeline([
 
-        ('vect', CountVectorizer(tokenizer=tokenize)),
-        ('tfidf', TfidfTransformer()),
+        ('vect', CountVectorizer(tokenizer=tokenize, max_df=1.0, max_features=None, ngram_range=(1, 1))),
+        ('tfidf', TfidfTransformer(use_idf=True)),
 
-        ('clf', RandomForestClassifier())
+        ('clf', RandomForestClassifier(n_estimators=200, min_samples_split=2))
     ])
     
     parameters = {
-        'vect__ngram_range': ((1, 1), (1, 2)),
-        'vect__max_df': (0.5, 0.75, 1.0),
-        'vect__max_features': (None, 5000, 10000),
-        'tfidf__use_idf': (True, False),
-        'clf__n_estimators': [50, 100, 200],
-        'clf__min_samples_split': [2, 3, 4]
+        #'vect__ngram_range': ((1, 1), (1, 2))
+        'vect__max_df': (0.5, 1.0) # 0.75
+        #'vect__max_features': (None, 5000, 10000)
+        #'tfidf__use_idf': (True, False),
+        #'clf__n_estimators': [50, 100, 200], #
+        #'clf__min_samples_split': [2, 3, 4] # 
     }
+    cv = GridSearchCV(pipeline, param_grid=parameters, verbose=3, cv=2)
 
-    cv = GridSearchCV(pipeline, param_grid=parameters)
-
-    multi_target_linear = MultiOutputClassifier(cv) 
-
-    return multi_target_linear
+   
+    return  MultiOutputClassifier(cv)
 
 
 def evaluate_model(model, X_test, Y_test, category_names):
@@ -103,7 +103,7 @@ def evaluate_model(model, X_test, Y_test, category_names):
     y_pred = model.predict(X_test)
 
     print("Model Score: {}".format(model.score(X_test, Y_test)))
-    print("Model Best Params: {}".format(model.best_params_))
+    #print("Model Best Params: {}".format(model.best_params_))
 
     for column in range(y_pred.shape[1]):
         print("Column: ",category_names[column])
