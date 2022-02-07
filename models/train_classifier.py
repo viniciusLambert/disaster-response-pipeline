@@ -6,18 +6,25 @@ import joblib
 
 from sklearn.metrics import classification_report
 from sklearn.model_selection import train_test_split
-from sklearn.pipeline import Pipeline, FeatureUnion
+from sklearn.pipeline import Pipeline
 from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 from sqlalchemy import create_engine
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.multioutput import MultiOutputClassifier
-
+from sklearn.model_selection import GridSearchCV
 from sklearn.metrics import classification_report
-
-from sklearn.base import BaseEstimator, TransformerMixin
 
 
 def tokenize(text):
+    """
+    Tokenize texts.
+
+    Parameters:
+    text (str): text that will be tokenize
+
+    Returns:
+    list: a list of tokens present on text
+    """
     norm_text = text.lower()
     tokens = nltk.tokenize.word_tokenize(norm_text)
     lemmatizer = nltk.stem.WordNetLemmatizer()
@@ -31,6 +38,17 @@ def tokenize(text):
 
 
 def load_data(database_filepath):
+    """
+    Load data from database and separe it in features, target and categories
+
+    Parameters:
+    database_filepath (str): the path of sqlite database file.
+    
+    Returns:
+    X (panda dataframe): features
+    y (panda dataframe): target
+    y.columns (panda series): target categories names
+    """
     engine = create_engine(f'sqlite:///{database_filepath}')
     df =  pd.read_sql_query ( "SELECT * FROM DisasterResponse", engine)
 
@@ -40,22 +58,48 @@ def load_data(database_filepath):
 
 
 def build_model():
+    """
+    Build and return a model.
+
+
+    Returns:
+    pipeline (sklearn pipeline): A pipeline to process text data
+    """
     pipeline = Pipeline([
 
         ('vect', CountVectorizer(tokenizer=tokenize)),
         ('tfidf', TfidfTransformer()),
 
-        ('lr_multi', MultiOutputClassifier(
-            RandomForestClassifier())
-        )
+        ('clf', RandomForestClassifier())
     ])
     
-    
-    return pipeline
+    parameters = {
+        'vect__ngram_range': ((1, 1), (1, 2)),
+        'vect__max_df': (0.5, 0.75, 1.0),
+        'vect__max_features': (None, 5000, 10000),
+        'tfidf__use_idf': (True, False),
+        'clf__n_estimators': [50, 100, 200],
+        'clf__min_samples_split': [2, 3, 4]
+    }
+
+    cv = GridSearchCV(pipeline, param_grid=parameters)
+
+    multi_target_linear = MultiOutputClassifier(cv) 
+
+    return multi_target_linear
 
 
 def evaluate_model(model, X_test, Y_test, category_names):
+    """
+    Evalueate each model target categorie.
 
+    Parameters:
+    model (sklearn Pipeline): the evaluated pipeline
+    X_test (panda dataframe): test feature data
+    Y_test (panda dataframe): test target data
+    category_names (pandas Series): target categories name
+    Returns:
+    """
     y_pred = model.predict(X_test)
 
     print("Model Score: {}".format(model.score(X_test, Y_test)))
@@ -67,6 +111,17 @@ def evaluate_model(model, X_test, Y_test, category_names):
 
 
 def save_model(model, model_filepath):
+    """
+    Dump model to a pickle file.
+
+    Parameters:
+    model (sklearn Pipeline): model to be stored
+    model_filepath (str): the path of generated pickle file path
+    
+    
+    Returns:
+    None
+    """
     joblib.dump(model, model_filepath)
 
 

@@ -4,12 +4,39 @@ import pandas as pd
 import sqlalchemy
 
 def load_data(messages_filepath, categories_filepath):
+    """
+    load data from CSV files
+
+    Parameters:
+    messages_filepath (str): messages csv file path
+    categories_filepath (str): categories csv file path 
+
+    
+    Returns:
+    
+    df (pandas dataframe): dataframe that contains message and categories
+    data
+    """
+    
     messages = pd.read_csv(messages_filepath)
     categories = pd.read_csv(categories_filepath)
     df = messages.merge(categories, on='id')
     return df
 
 def clean_data(df):
+    """
+    Clean data from dataframe
+        - split categories into separated clearly named columns
+        - convert to binary
+        - drop duplicates
+
+    Parameters:
+    df (pandas dataframe): the dataframe to be clean
+
+    Returns:
+    df (pandas dataframe): a cleaned dataframe
+    """
+    
     categories =  df.categories.str.split(';', expand=True)
 
     row = categories.iloc[0]
@@ -31,6 +58,16 @@ def clean_data(df):
     return df
 
 def save_data(df, database_filename):
+    """
+    Save dataframe in a sql database
+
+    Parameters:
+    df (pandas dataframe): the dataframe to be stored
+    database_filename (str): sqlite database file name
+    
+    Returns:
+    None
+    """
     engine = sqlalchemy.create_engine(f'sqlite:///{database_filename}')
     df.to_sql("DisasterResponse", engine, index=False)  
 
