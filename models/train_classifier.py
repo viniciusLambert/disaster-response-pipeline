@@ -76,7 +76,8 @@ def build_model():
         ('vect', CountVectorizer(tokenizer=tokenize, max_df=1.0, max_features=None, ngram_range=(1, 1))),
         ('tfidf', TfidfTransformer(use_idf=True)),
 
-        ('clf', MultiOutputClassifier(RandomForestClassifier(n_estimators=200, min_samples_split=2)))
+        ('clf', MultiOutputClassifier(
+            RandomForestClassifier(n_estimators=200, min_samples_split=2)))
     ])
     
     parameters = {
