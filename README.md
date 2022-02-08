@@ -114,7 +114,7 @@ There are 4 important folders in this project:
 This code uses the MIT License. feel free to use the code as you would like!
 
 
-## Next Possible Steps
+## Next Possibles Steps
 
 - Go into more detail about the dataset and your data cleaning and modeling process in your README file, add screenshots of your web app and model results.
 - Add more visualizations to the web app.
