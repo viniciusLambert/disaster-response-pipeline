@@ -53,10 +53,6 @@ def load_data(database_filepath):
     """
     engine = create_engine(f'sqlite:///{database_filepath}')
     df =  pd.read_sql_query ( "SELECT * FROM DisasterResponse", engine)
-
-    #Transform values in binary
-    df['related'] = df['related'].astype('str').str.replace('2', '1')
-    df['related'] = df['related'].astype('int')
     
     X = df["message"]
     y = df.drop(['id', 'message', 'original', 'genre'], axis=1)
@@ -112,7 +108,7 @@ def evaluate_model(model, X_test, Y_test, category_names):
 
     for column in range(y_pred.shape[1]):
         print("Column: ",category_names[column])
-        print(classification_report(Y_test.to_numpy()[:,column], y_pred[:,column]))
+        print(classification_report(Y_test.to_numpy()[:,column], y_pred[:,column], zero_division=0))
         print("----------------------------------------------------------*")
 
 
