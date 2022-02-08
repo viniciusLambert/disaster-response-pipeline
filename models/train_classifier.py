@@ -54,6 +54,10 @@ def load_data(database_filepath):
     engine = create_engine(f'sqlite:///{database_filepath}')
     df =  pd.read_sql_query ( "SELECT * FROM DisasterResponse", engine)
 
+    #Transform values in binary
+    df['related'] = df['related'].astype('str').str.replace('2', '1')
+    df['related'] = df['related'].astype('int')
+    
     X = df["message"]
     y = df.drop(['id', 'message', 'original', 'genre'], axis=1)
     return X, y, y.columns
@@ -72,7 +76,7 @@ def build_model():
         ('vect', CountVectorizer(tokenizer=tokenize, max_df=1.0, max_features=None, ngram_range=(1, 1))),
         ('tfidf', TfidfTransformer(use_idf=True)),
 
-        ('clf', RandomForestClassifier(n_estimators=200, min_samples_split=2))
+        ('clf', MultiOutputClassifier(RandomForestClassifier(n_estimators=200, min_samples_split=2)))
     ])
     
     parameters = {
@@ -86,7 +90,7 @@ def build_model():
     cv = GridSearchCV(pipeline, param_grid=parameters, verbose=3, cv=2)
 
    
-    return  MultiOutputClassifier(cv)
+    return  cv
 
 
 def evaluate_model(model, X_test, Y_test, category_names):
