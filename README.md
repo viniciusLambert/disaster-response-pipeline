@@ -15,7 +15,7 @@
 
 ## Project Motivation<a name="motivation"></a>
 
-This project analyse tweets to identify disaster. 
+This project analyses tweets to identify disasters. 
 
 
 ![plot](./images/webapp1.png)
@@ -38,9 +38,9 @@ This project analyse tweets to identify disaster.
 
 
 ## Data 
-The data for this project is Tweets cataloged by Figure eight as disaster related, it inform what type of disaster a tweet is related.
+The data for this project is Tweets cataloged by Figure eight as disaster-related, it informs what type of disaster a tweet is related to.
 
-The categories presents on dataset is:
+The categories present on dataset is:
 
 - Related: Is related to a disaster 
 - Request: Request something
@@ -83,13 +83,13 @@ The categories presents on dataset is:
 
 Is important to say that this dataset is imbalanced (ie some labels like water have few examples). This imbalance could be affected the precision and recall of some categories. 
 
-If you know were i can found more data, contact me!! <3
+If you know where I can find more data, contact me!! <3
 
 
 ## File Descriptions <a name="files"></a>
 
 There are 4 important folders in this project:
-    - notebooks: Jupyter noteeboks used to protorype the code.
+    - notebooks: Jupyter notebooks used to prototype the code.
     - data: Data CSVs and ETL python code.
     - models: ML pipeline code.
     - app: Flask web app
@@ -98,7 +98,7 @@ There are 4 important folders in this project:
 1. Run the following commands in the project's root directory to set up your database and model.
 
     - To run ETL pipeline that cleans data and stores in database
-        `python data/process_data.py data/disaster_messages.csv data/disaster_categories.csv data/DisasterResponse.db`
+        `python data/process_data.py data/disaster_messages.csv data/disaster_categories.csv data/DisasterResponse.db
     - To run ML pipeline that trains classifier and saves
         `python models/train_classifier.py data/DisasterResponse.db models/classifier.pkl`
 
