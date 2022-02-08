@@ -11,7 +11,7 @@
   - [File Descriptions <a name="files"></a>](#file-descriptions-)
   - [Instructions:](#instructions)
   - [Licensing, Authors, Acknowledgements<a name="licensing"></a>](#licensing-authors-acknowledgements)
-  - [Next Possible Steps](#next-possible-steps)
+  - [Next Possibles Steps](#next-possibles-steps)
 
 ## Project Motivation<a name="motivation"></a>
 
@@ -98,7 +98,7 @@ There are 4 important folders in this project:
 1. Run the following commands in the project's root directory to set up your database and model.
 
     - To run ETL pipeline that cleans data and stores in database
-        `python data/process_data.py data/disaster_messages.csv data/disaster_categories.csv data/DisasterResponse.db
+        `python data/process_data.py data/disaster_messages.csv data/disaster_categories.csv data/DisasterResponse.db`
     - To run ML pipeline that trains classifier and saves
         `python models/train_classifier.py data/DisasterResponse.db models/classifier.pkl`
 

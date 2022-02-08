@@ -105,10 +105,10 @@ def evaluate_model(model, X_test, Y_test, category_names):
 
     print("Model Score: {}".format(model.score(X_test, Y_test)))
     #print("Model Best Params: {}".format(model.best_params_))
-
     for column in range(y_pred.shape[1]):
         print("Column: ",category_names[column])
-        print(classification_report(Y_test.to_numpy()[:,column], y_pred[:,column], zero_division=0))
+
+        print(classification_report(Y_test[category_names[column]], y_pred[:,column], zero_division=0))
         print("----------------------------------------------------------*")
 
 
