@@ -1,8 +1,8 @@
-# Disaster Response Pipeline Project
+# Tweet Classifier Project
 
 ### Table of Contents
 
-- [Disaster Response Pipeline Project](#disaster-response-pipeline-project)
+- [Tweet Classifier Project](#tweet-classifier-project)
     - [Table of Contents](#table-of-contents)
   - [Project Motivation<a name="motivation"></a>](#project-motivation)
   - [Installation <a name="installation"></a>](#installation-)
