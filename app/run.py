@@ -11,6 +11,7 @@ from plotly.graph_objs import Bar
 import joblib
 from sqlalchemy import create_engine
 
+from herokutokenizer import Tokenizer,StartingVerbExtractor
 
 app = Flask(__name__)
 
@@ -26,12 +27,12 @@ def tokenize(text):
     return clean_tokens
 
 # load data
-engine = create_engine('sqlite:///../data/DisasterResponse.db')
+engine = create_engine('sqlite:///data/DisasterResponse.db')
 df = pd.read_sql_table('DisasterResponse', engine)
 
 
 # load model
-model = joblib.load("../models/classifier.pkl")
+model = joblib.load("models/classifier.pkl")
 
 
 # index webpage displays cool visuals and receives user input text for model
@@ -115,12 +116,11 @@ def go():
         classification_result=classification_results
     )
 
-"""
-def main():
-    #app.run(host='0.0.0.0', port=3001, debug=True)
-    app.run()
 
+def main():
+    app.run(host='0.0.0.0', port=3001, debug=True)
+    #app.run()
+    pass
 
 if __name__ == '__main__':
     main()
-"""
