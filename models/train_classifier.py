@@ -4,14 +4,14 @@ nltk.download(['punkt', 'wordnet', 'averaged_perceptron_tagger'])
 import sys
 import pandas as pd
 import numpy as np
-import joblib
+import pickle
 
 from sklearn.metrics import classification_report
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 from sqlalchemy import create_engine
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import AdaBoostClassifier
 from sklearn.multioutput import MultiOutputClassifier
 from sklearn.model_selection import GridSearchCV
 from sklearn.metrics import classification_report
@@ -49,22 +49,22 @@ def build_model():
     """
     pipeline = Pipeline([   
         ('tokenizer',Tokenizer()), 
-        ('vect', CountVectorizer(max_df=1.0, max_features=None, ngram_range=(1, 1))),
-        ('tfidf', TfidfTransformer(use_idf=True)),
+        ('vect', CountVectorizer()),
+        ('tfidf', TfidfTransformer()),
 
         ('clf', MultiOutputClassifier(
-            RandomForestClassifier(n_estimators=200, min_samples_split=2)))
+            AdaBoostClassifier())) # the optmus values is 200, but it made the model too
+                                   # big for heroku  
     ])
     
-    #parameters = {
+    parameters = {
         #'vect__ngram_range': ((1, 1), (1, 2))
         #'vect__max_df': (0.5, 1.0) # 0.75
         #'vect__max_features': (None, 5000, 10000)
         #'tfidf__use_idf': (True, False),
-        #'clf__n_estimators': [50, 100, 200], #
-        #'clf__min_samples_split': [2, 3, 4] # 
-    #}
-    #cv = GridSearchCV(pipeline, param_grid=parameters, verbose=3, cv=2)
+       'clf__estimator__n_estimators' : [50,60,70,80]
+    }
+    cv = GridSearchCV(pipeline, param_grid=parameters, verbose=3)
 
    
     return  pipeline
@@ -104,7 +104,8 @@ def save_model(model, model_filepath):
     Returns:
     None
     """
-    joblib.dump(model, model_filepath)
+    filename = model_filepath
+    pickle.dump(model, open(filename, 'wb'))
 
 
 def main():
