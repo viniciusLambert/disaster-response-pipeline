@@ -106,7 +106,7 @@ There are 4 important folders in this project:
 2. Run the following command in the root's directory to run your web app.
     `python app/run.py`
 
-3. Go to http://0.0.0.0:3001/
+3. Go to http://0.0.0.0:5000/
 
 
 
