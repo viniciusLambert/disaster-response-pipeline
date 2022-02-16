@@ -53,8 +53,8 @@ def build_model():
         ('tfidf', TfidfTransformer()),
 
         ('clf', MultiOutputClassifier(
-            AdaBoostClassifier())) # the optmus values is 200, but it made models to
-                                                      # big for heroku  
+            AdaBoostClassifier())) # the optmus values is 200, but it made the model too
+                                   # big for heroku  
     ])
     
     parameters = {
