@@ -1,8 +1,8 @@
-# Disaster Response Pipeline Project
+# Tweet Classifier Project
 
 ### Table of Contents
 
-- [Disaster Response Pipeline Project](#disaster-response-pipeline-project)
+- [Tweet Classifier Project](#tweet-classifier-project)
     - [Table of Contents](#table-of-contents)
   - [Project Motivation<a name="motivation"></a>](#project-motivation)
   - [Installation <a name="installation"></a>](#installation-)
@@ -17,6 +17,7 @@
 
 This project analyses tweets to identify disasters. 
 
+You can access it Here: https://tt-disaster-data.herokuapp.com/
 
 ![plot](./images/webapp1.png)
 ![plot](images/webapp2.png)
